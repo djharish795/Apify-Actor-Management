@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apify Actor Manager</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Global loading overlay - shows during API calls -->
+    <div id="global-loader" class="global-loader hidden">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+    </div>tml lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apify Actor Manager</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+   
+    <div id="global-loader" class="global-loader hidden">
+        <div class="loader-content">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    
+    <nav class="top-nav">
+        <div class="nav-brand">
+            <i class="fas fa-spider"></i>
+            <span>Apify </span>
+        </div>
+        <div class="nav-actions">
+            <button id="theme-toggle" class="nav-btn" onclick="toggleTheme()">
+                <i class="fas fa-moon"></i>
+            </button>
+            <button id="fullscreen-toggle" class="nav-btn" onclick="toggleFullscreen()">
+                <i class="fas fa-expand"></i>
+            </button>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        <div class="progress-bar">
+            <div class="progress-step active" data-step="auth">
+                <i class="fas fa-key"></i>
+                <span>Auth</span>
+            </div>
+        </div>
+
+        <header class="main-header">
+            <div class="header-content">
+                <h1>
+                    <i class="fas fa-spider header-icon"></i>
+                     Actor Manager
+                </h1>
+                <p>Execute Apify actors with intelligent configuration and real-time monitoring</p>
+            </div>
+            <div class="header-stats" id="header-stats">
+                <div class="stat-card">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <span class="stat-number" id="session-time">00:00</span>
+                        <span class="stat-label">Session</span>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-play"></i>
+                    <div>
+                        <span class="stat-number" id="executions-count">0</span>
+                        <span class="stat-label">Executions</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Authentication Section -->
+        <section id="auth-section" class="section card-section">
+            <div class="section-header">
+                <h2>
+                    <i class="fas fa-shield-alt"></i>
+                    Secure Authentication
+                </h2>
+                <p>Connect to your Apify account securely</p>
+            </div>
+            
+            <div class="auth-container">
+                <div class="auth-form-wrapper">
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <i class="fas fa-key input-icon"></i>
+                            <input 
+                                type="password" 
+                                id="api-key" 
+                                placeholder="Enter your Apify API Key" 
+                                autocomplete="off"
+                                spellcheck="false"
+                            />
+                            <button type="button" class="toggle-password" onclick="togglePasswordVisibility()">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="input-help">
+                            <i class="fas fa-info-circle"></i>
+                            <span>Find your API key in <a href="https://console.apify.com/account/integrations" target="_blank">Apify Console</a></span>
+                        </div>
+                    </div>
+                    
+                    <button id="connect-btn" class="primary-btn" onclick="authenticateUser()">
+                        <i class="fas fa-plug"></i>
+                        <span>Connect to Apify</span>
+                        <div class="btn-loader hidden">
+                            <div class="btn-spinner"></div>
+                        </div>
+                    </button>
+                </div>
+                
+                <div class="auth-features">
+                    <div class="feature-item">
+                        <i class="fas fa-lock"></i>
+                        <span>Encrypted Connection</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Session Management</span>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-shield-check"></i>
+                        <span>Secure Storage</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="auth-status" class="status"></div>
+        </section>
+
+        
+        <section id="actor-section" class="section card-section hidden">
+            <div class="section-header">
+                <h2>
+                    <i class="fas fa-theater-masks"></i>
+                    Choose Your Actor
+                </h2>
+                <p>Select from your available Apify actors</p>
+            </div>
+            
+            <div class="actor-controls">
+                <div class="search-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input 
+                        type="text" 
+                        id="actor-search" 
+                        placeholder="Search actors..." 
+                        onkeyup="filterActors()"
+                    />
+                    <button class="clear-search" onclick="clearSearch()" style="display: none;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="view-toggle">
+                    <button class="view-btn active" data-view="grid" onclick="toggleView('grid')">
+                        <i class="fas fa-th-large"></i>
+                    </button>
+                    <button class="view-btn" data-view="list" onclick="toggleView('list')">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+                
+                <button class="refresh-btn" onclick="loadActors()" title="Refresh actors">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+            
+            <div id="actors-list" class="actors-container grid-view"></div>
+            <div id="actor-status" class="status"></div>
+        </section>
+
+        <section id="schema-section" class="section card-section hidden">
+            <div class="section-header">
+                <h2>
+                    <i class="fas fa-cogs"></i>
+                    Actor Configuration
+                </h2>
+                <p>Configure parameters for optimal execution</p>
+            </div>
+            
+            <div class="config-container">
+                <div id="actor-info" class="actor-info-card"></div>
+                
+                <div class="form-container">
+                    <div class="form-header">
+                        <h3>
+                            <i class="fas fa-sliders-h"></i>
+                            Parameters
+                        </h3>
+                        <div class="form-actions">
+                            <button class="secondary-btn" onclick="resetForm()">
+                                <i class="fas fa-undo"></i>
+                                Reset
+                            </button>
+                            <button class="secondary-btn" onclick="loadPreset()">
+                                <i class="fas fa-download"></i>
+                                Load Preset
+                            </button>
+                            <button class="secondary-btn" onclick="savePreset()">
+                                <i class="fas fa-save"></i>
+                                Save Preset
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <form id="actor-form" class="schema-form"></form>
+                </div>
+            </div>
+            
+            <div class="execution-panel">
+                <div class="execution-summary">
+                    <div class="summary-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Est. Duration: <strong id="est-duration">~2-5 min</strong></span>
+                    </div>
+                    <div class="summary-item">
+                        <i class="fas fa-coins"></i>
+                        <span>Est. Cost: <strong id="est-cost">$0.01-0.05</strong></span>
+                    </div>
+                </div>
+                
+                <button id="execute-btn" class="execute-btn" onclick="executeActor()">
+                    <i class="fas fa-rocket"></i>
+                    <span>Execute Actor</span>
+                    <div class="btn-loader hidden">
+                        <div class="btn-spinner"></div>
+                    </div>
+                </button>
+            </div>
+            
+            <div id="execution-status" class="status"></div>
+        </section>
+
+        <!---- Results Section -->
+        <section id="results-section" class="section card-section hidden">
+            <div class="section-header">
+                <h2>
+                    <i class="fas fa-chart-line"></i>
+                    Execution Results
+                </h2>
+                <p>Real-time monitoring and results analysis</p>
+            </div>
+            
+            <div class="results-container">
+                <div id="execution-info" class="execution-info-enhanced"></div>
+                
+                <div class="results-toolbar">
+                    <div class="toolbar-left">
+                        <button class="toolbar-btn" onclick="downloadResults('json')">
+                            <i class="fas fa-download"></i>
+                            JSON
+                        </button>
+                        <button class="toolbar-btn" onclick="downloadResults('csv')">
+                            <i class="fas fa-file-csv"></i>
+                            CSV
+                        </button>
+                        <button class="toolbar-btn" onclick="shareResults()">
+                            <i class="fas fa-share"></i>
+                            Share
+                        </button>
+                    </div>
+                    
+                    <div class="toolbar-right">
+                        <div class="results-filter">
+                            <select id="results-filter" onchange="filterResults()">
+                                <option value="all">All Results</option>
+                                <option value="success">Success Only</option>
+                                <option value="errors">Errors Only</option>
+                            </select>
+                        </div>
+                        
+                        <div class="view-options">
+                            <button class="view-btn active" data-view="cards" onclick="toggleResultsView('cards')">
+                                <i class="fas fa-th-large"></i>
+                            </button>
+                            <button class="view-btn" data-view="table" onclick="toggleResultsView('table')">
+                                <i class="fas fa-table"></i>
+                            </button>
+                            <button class="view-btn" data-view="json" onclick="toggleResultsView('json')">
+                                <i class="fas fa-code"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="results-display" class="results-display"></div>
+            </div>
+            
+            <div class="action-panel">
+                <button class="secondary-btn" onclick="resetApp()">
+                    <i class="fas fa-arrow-left"></i>
+                    New Execution
+                </button>
+                <button class="secondary-btn" onclick="duplicateExecution()">
+                    <i class="fas fa-copy"></i>
+                    Duplicate
+                </button>
+                <button class="primary-btn" onclick="scheduleExecution()">
+                    <i class="fas fa-clock"></i>
+                    Schedule
+                </button>
+            </div>
+        </section>
+    </div>
+
+    
+    <div class="fab" onclick="showQuickActions()">
+        <i class="fas fa-magic"></i>
+    </div>
+
+
+    <div id="quick-actions-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Quick Actions</h3>
+                <button class="close-btn" onclick="closeModal('quick-actions-modal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="quick-action" onclick="quickExecute()">
+                    <i class="fas fa-bolt"></i>
+                    <span>Quick Execute</span>
+                </div>
+                <div class="quick-action" onclick="showHistory()">
+                    <i class="fas fa-history"></i>
+                    <span>Execution History</span>
+                </div>
+                <div class="quick-action" onclick="showAnalytics()">
+                    <i class="fas fa-analytics"></i>
+                    <span>Analytics</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
